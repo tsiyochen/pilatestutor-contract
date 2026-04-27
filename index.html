@@ -553,7 +553,7 @@ async function loadComments() {
     });
     if (!res.ok) { renderComments([]); return; }
     const data = await res.json();
-    const list = JSON.parse(atob(data.content.replace(/\n/g, '')));
+    const list = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
     renderComments(list);
   } catch(e) {
     document.getElementById('commentList').innerHTML =
