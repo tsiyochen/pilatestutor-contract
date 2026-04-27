@@ -506,22 +506,15 @@ calc();
 </script>
 
 <script>
-// ── 設定區（部署前請填入） ──────────────────────────────────────
-const GH_OWNER = 'tsiyochen';
-const GH_REPO  = 'pilatestutor-contract';
-const GH_TOKEN = ['github_pat_11AJP55FQ0Cvjxfl6xROsN_s', 'ayTgo72sbiiy96EWLHJfzSB5W8HBuabN8OdfuQf4Vi2ZZKII6FKZ8pfIrT'].join('');
-const GH_BRANCH = 'main';
-// ────────────────────────────────────────────────────────────────
-
-const FILE_PATH = 'comments.json';
-const API_URL   = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${FILE_PATH}`;
-const RAW_URL   = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${FILE_PATH}`;
-
-let _currentSha = null;
+const WORKER_URL = 'https://pilatestutor-contract.chayu0415.workers.dev';
 
 function fmtTime(iso) {
   const d = new Date(iso);
   return d.toLocaleString('zh-TW', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
 }
 
 function renderComments(list) {
@@ -542,31 +535,15 @@ function renderComments(list) {
     '</div>';
 }
 
-function escHtml(s) {
-  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
-}
-
 async function loadComments() {
   try {
-    const res = await fetch(API_URL, {
-      headers: { Authorization: `Bearer ${GH_TOKEN}`, Accept: 'application/vnd.github+json' }
-    });
-    if (!res.ok) { renderComments([]); return; }
-    const data = await res.json();
-    const list = JSON.parse(decodeURIComponent(escape(atob(data.content.replace(/\n/g, '')))));
+    const res = await fetch(WORKER_URL);
+    const list = res.ok ? await res.json() : [];
     renderComments(list);
   } catch(e) {
     document.getElementById('commentList').innerHTML =
       '<div class="comment-empty">留言載入失敗，請重新整理頁面。</div>';
   }
-}
-
-async function fetchFileMeta() {
-  const res = await fetch(API_URL, {
-    headers: { Authorization: `Bearer ${GH_TOKEN}`, Accept: 'application/vnd.github+json' }
-  });
-  if (!res.ok) throw new Error('無法讀取檔案 metadata');
-  return res.json(); // { sha, content(base64) }
 }
 
 async function submitComment() {
@@ -584,45 +561,21 @@ async function submitComment() {
   statusEl.textContent = '送出中…';
 
   try {
-    // 1. 取得目前檔案（sha + 內容）
-    const meta    = await fetchFileMeta();
-    const current = JSON.parse(atob(meta.content.replace(/\n/g, '')));
-    const sha     = meta.sha;
-
-    // 2. 附加新留言
-    current.push({ name, text, time: new Date().toISOString() });
-
-    // 3. 寫回 GitHub
-    const body = JSON.stringify({
-      message: `add comment by ${name}`,
-      content: btoa(unescape(encodeURIComponent(JSON.stringify(current, null, 2)))),
-      sha,
-      branch: GH_BRANCH
-    });
-
-    const putRes = await fetch(API_URL, {
+    const res = await fetch(WORKER_URL, {
       method: 'PUT',
-      headers: {
-        Authorization: `Bearer ${GH_TOKEN}`,
-        Accept: 'application/vnd.github+json',
-        'Content-Type': 'application/json'
-      },
-      body
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, text })
     });
 
-    if (!putRes.ok) {
-      const err = await putRes.json();
-      throw new Error(err.message || '寫入失敗');
-    }
+    if (!res.ok) throw new Error('寫入失敗');
 
     nameEl.value = '';
     textEl.value = '';
     statusEl.textContent = '留言成功！';
-    renderComments(current);
+    await loadComments();
     setTimeout(() => { statusEl.textContent = ''; }, 3000);
   } catch(e) {
     statusEl.textContent = '錯誤：' + e.message;
-    btn.disabled = false;
   } finally {
     btn.disabled = false;
   }
