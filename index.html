@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>教練培訓合約方案</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+TC:wght@400;600&family=DM+Mono:wght@400;500&family=Noto+Sans+TC:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #F5F3EE;
+    --surface: #FFFFFF;
+    --ink: #1A1A18;
+    --ink-2: #5A5A52;
+    --ink-3: #9A9A90;
+    --accent: #2D6A4F;
+    --accent-light: #E8F4EF;
+    --accent-mid: #52B788;
+    --warn: #B5451B;
+    --warn-light: #FAF0EB;
+    --mid: #D4A017;
+    --mid-light: #FDF6E3;
+    --border: #E2DDD5;
+    --serif: 'Noto Serif TC', serif;
+    --sans: 'Noto Sans TC', sans-serif;
+    --mono: 'DM Mono', monospace;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html { font-size: 16px; scroll-behavior: smooth; }
+  body { background: var(--bg); color: var(--ink); font-family: var(--sans); font-weight: 300; line-height: 1.8; }
+
+  /* Layout */
+  .page { max-width: 860px; margin: 0 auto; padding: 0 2rem 6rem; }
+
+  /* Hero */
+  .hero { padding: 5rem 0 3rem; border-bottom: 1px solid var(--border); margin-bottom: 3rem; }
+  .hero-eyebrow { font-family: var(--mono); font-size: 11px; letter-spacing: 0.15em; color: var(--ink-3); text-transform: uppercase; margin-bottom: 1.25rem; }
+  .hero-title { font-family: var(--serif); font-size: clamp(2rem, 4vw, 3rem); font-weight: 600; line-height: 1.3; color: var(--ink); margin-bottom: 1rem; }
+  .hero-title em { color: var(--accent); font-style: normal; }
+  .hero-sub { font-size: 15px; color: var(--ink-2); max-width: 520px; line-height: 1.9; }
+
+  /* Key numbers */
+  .key-numbers { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 3rem; }
+  .kn-item { background: var(--surface); padding: 1.5rem 1.25rem; }
+  .kn-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.5rem; }
+  .kn-value { font-family: var(--serif); font-size: 1.75rem; font-weight: 600; color: var(--ink); line-height: 1; }
+  .kn-unit { font-size: 13px; color: var(--ink-2); margin-top: 0.25rem; }
+
+  /* Section */
+  .section { margin-bottom: 3.5rem; }
+  .section-header { display: flex; align-items: baseline; gap: 1rem; margin-bottom: 1.5rem; }
+  .section-num { font-family: var(--mono); font-size: 11px; color: var(--ink-3); }
+  .section-title { font-family: var(--serif); font-size: 1.2rem; font-weight: 600; color: var(--ink); }
+
+  /* Contract conditions */
+  .conditions { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1.5rem; }
+  .cond-card { background: var(--surface); border: 1px solid var(--border); padding: 1.5rem; position: relative; overflow: hidden; }
+  .cond-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--accent); }
+  .cond-icon { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; color: var(--accent); text-transform: uppercase; margin-bottom: 0.75rem; }
+  .cond-main { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; color: var(--ink); margin-bottom: 0.25rem; }
+  .cond-desc { font-size: 13px; color: var(--ink-2); line-height: 1.7; }
+
+  .and-badge { display: flex; align-items: center; justify-content: center; gap: 0.75rem; margin: 0.5rem 0 1.5rem; }
+  .and-line { flex: 1; height: 1px; background: var(--border); }
+  .and-text { font-family: var(--mono); font-size: 11px; color: var(--ink-3); letter-spacing: 0.1em; white-space: nowrap; }
+
+  .condition-note { background: var(--accent-light); border-left: 3px solid var(--accent); padding: 1rem 1.25rem; font-size: 13px; color: var(--accent); line-height: 1.8; }
+
+  /* Refund table */
+  .refund-table { width: 100%; border-collapse: collapse; font-size: 13px; background: var(--surface); border: 1px solid var(--border); }
+  .refund-table th { text-align: left; padding: 10px 14px; font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); border-bottom: 1px solid var(--border); background: var(--bg); font-weight: 400; }
+  .refund-table td { padding: 12px 14px; border-bottom: 1px solid var(--border); color: var(--ink); vertical-align: middle; }
+  .refund-table tr:last-child td { border-bottom: none; }
+  .refund-table tr.phase-b { background: #FAFAF8; }
+  .refund-table tr.phase-done td { color: var(--accent); }
+
+  .phase-divider td { padding: 6px 14px; background: var(--accent-light); font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent); border-bottom: 1px solid var(--border); }
+
+  .pill { display: inline-block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.06em; padding: 3px 8px; border-radius: 2px; font-weight: 500; }
+  .pill-high { background: var(--warn-light); color: var(--warn); }
+  .pill-mid { background: var(--mid-light); color: var(--mid); }
+  .pill-low { background: var(--accent-light); color: var(--accent); }
+  .pill-done { background: var(--accent-light); color: var(--accent); }
+
+  .bar-wrap { display: flex; align-items: center; gap: 8px; }
+  .bar-bg { flex: 1; height: 4px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .bar-fill { height: 100%; border-radius: 2px; }
+
+  /* Calculator */
+  .calc-box { background: var(--surface); border: 1px solid var(--border); padding: 2rem; }
+  .calc-controls { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2rem; }
+  .calc-ctrl label { display: block; font-family: var(--mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.5rem; }
+  .calc-ctrl input[type=range] { width: 100%; accent-color: var(--accent); height: 4px; }
+  .calc-ctrl .val-display { font-family: var(--serif); font-size: 1.5rem; font-weight: 600; color: var(--ink); margin-top: 0.25rem; }
+
+  .calc-results { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 1.5rem; }
+  .calc-stat { background: var(--surface); padding: 1rem; }
+  .calc-stat-label { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.3rem; }
+  .calc-stat-val { font-family: var(--serif); font-size: 1.25rem; font-weight: 600; color: var(--ink); }
+  .calc-stat-val.green { color: var(--accent); }
+
+  .scenario-output { font-size: 13px; color: var(--ink-2); line-height: 1.9; padding: 1rem 1.25rem; background: var(--bg); border-left: 2px solid var(--border); }
+  .scenario-output strong { color: var(--ink); font-weight: 500; }
+
+  /* Session recommendation */
+  .rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1px; background: var(--border); border: 1px solid var(--border); margin-bottom: 1.25rem; }
+  .rec-item { background: var(--surface); padding: 1.25rem; position: relative; }
+  .rec-item.recommended { background: var(--accent-light); }
+  .rec-tag { font-family: var(--mono); font-size: 10px; letter-spacing: 0.1em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 0.5rem; }
+  .rec-item.recommended .rec-tag { color: var(--accent); }
+  .rec-sessions { font-family: var(--serif); font-size: 1.6rem; font-weight: 600; color: var(--ink); line-height: 1; margin-bottom: 0.4rem; }
+  .rec-item.recommended .rec-sessions { color: var(--accent); }
+  .rec-detail { font-size: 12px; color: var(--ink-2); line-height: 1.7; }
+  .rec-chosen { position: absolute; top: 10px; right: 10px; font-family: var(--mono); font-size: 9px; letter-spacing: 0.08em; background: var(--accent); color: #fff; padding: 2px 7px; border-radius: 2px; }
+  .rec-note { font-size: 13px; color: var(--ink-2); line-height: 1.9; padding: 1rem 1.25rem; background: var(--mid-light); border-left: 3px solid var(--mid); }
+
+  /* Comments */
+  .comment-form { margin-bottom: 2rem; }
+  .comment-form input, .comment-form textarea {
+    width: 100%; border: 1px solid var(--border); background: var(--bg);
+    color: var(--ink); font-family: var(--sans); font-size: 14px; font-weight: 300;
+    padding: 0.65rem 0.9rem; outline: none; resize: vertical;
+    transition: border-color 0.15s;
+  }
+  .comment-form input:focus, .comment-form textarea:focus { border-color: var(--accent); }
+  .comment-form input { margin-bottom: 0.75rem; }
+  .comment-form textarea { min-height: 90px; margin-bottom: 0.75rem; }
+  .comment-submit {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase;
+    background: var(--accent); color: #fff; border: none; padding: 0.6rem 1.4rem;
+    cursor: pointer; transition: opacity 0.15s;
+  }
+  .comment-submit:hover { opacity: 0.85; }
+  .comment-submit:disabled { opacity: 0.4; cursor: not-allowed; }
+  .comment-status { font-family: var(--mono); font-size: 11px; color: var(--ink-3); margin-left: 0.75rem; }
+  .comment-list { display: flex; flex-direction: column; gap: 1px; background: var(--border); border: 1px solid var(--border); }
+  .comment-item { background: var(--surface); padding: 1.1rem 1.25rem; }
+  .comment-meta { display: flex; align-items: baseline; gap: 0.75rem; margin-bottom: 0.4rem; }
+  .comment-name { font-family: var(--serif); font-size: 0.95rem; font-weight: 600; color: var(--ink); }
+  .comment-time { font-family: var(--mono); font-size: 10px; color: var(--ink-3); }
+  .comment-text { font-size: 14px; color: var(--ink-2); line-height: 1.85; white-space: pre-wrap; }
+  .comment-empty { font-family: var(--mono); font-size: 11px; color: var(--ink-3); text-align: center; padding: 2rem; letter-spacing: 0.08em; }
+
+  /* Footer note */
+  .footer-note { margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--border); font-size: 12px; color: var(--ink-3); line-height: 1.9; font-family: var(--mono); }
+
+  @media (max-width: 600px) {
+    .conditions { grid-template-columns: 1fr; }
+    .calc-controls { grid-template-columns: 1fr; }
+    .hero-title { font-size: 1.75rem; }
+    .rec-grid { grid-template-columns: 1fr; }
+    .legal-grid { grid-template-columns: 1fr !important; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+
+  <!-- Hero -->
+  <header class="hero">
+    <p class="hero-eyebrow">內部討論文件 · 股東版本</p>
+    <h1 class="hero-title">教練培訓<br><em>合約方案</em>說明</h1>
+    <p class="hero-sub">本文件說明公司出資培訓櫃檯人員為皮拉提斯教練的合約架構，包含綁約條件、還款階梯設計與情境試算，供股東討論參考。</p>
+  </header>
+
+  <!-- Key numbers -->
+  <div class="key-numbers">
+    <div class="kn-item">
+      <div class="kn-label">培訓費用</div>
+      <div class="kn-value">57,000</div>
+      <div class="kn-unit">元（公司全額支付）</div>
+    </div>
+    <div class="kn-item">
+      <div class="kn-label">教師時薪</div>
+      <div class="kn-value">600</div>
+      <div class="kn-unit">元（依市場行情）</div>
+    </div>
+    <div class="kn-item">
+      <div class="kn-label">回本堂數</div>
+      <div class="kn-value">95</div>
+      <div class="kn-unit">堂（約 10–14 個月）</div>
+    </div>
+    <div class="kn-item">
+      <div class="kn-label">合約目標</div>
+      <div class="kn-value">180</div>
+      <div class="kn-unit">堂 + 2 年（雙條件）</div>
+    </div>
+  </div>
+
+  <!-- Section 1: Contract conditions -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">01</span>
+      <h2 class="section-title">合約核心條件</h2>
+    </div>
+
+    <div class="conditions">
+      <div class="cond-card">
+        <div class="cond-icon">條件一 · 堂數</div>
+        <div class="cond-main">180 堂</div>
+        <div class="cond-desc">在職期間累計授課堂數須達 180 堂，每週預計排課 2–3 堂。</div>
+      </div>
+      <div class="cond-card">
+        <div class="cond-icon">條件二 · 年限</div>
+        <div class="cond-main">2 年</div>
+        <div class="cond-desc">在職年限須滿 2 年，兩個條件皆須達成，方視為完成合約。</div>
+      </div>
+    </div>
+
+    <div class="and-badge">
+      <div class="and-line"></div>
+      <div class="and-text">兩個條件同時達成，才算完成合約</div>
+      <div class="and-line"></div>
+    </div>
+
+    <div class="condition-note">
+      若員工主動離職、拒絕排課，或每月授課低於約定下限連續超過 2 個月，視為提前終止合約，依下方還款階梯計算應退還金額。
+    </div>
+  </section>
+
+  <!-- Section 2: Session recommendation -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">02</span>
+      <h2 class="section-title">合理堂數建議</h2>
+    </div>
+
+    <p style="font-size:13px;color:var(--ink-2);line-height:1.9;margin-bottom:1.25rem;">回本堂數（95 堂）是底線，合約目標堂數通常設在回本的 1.5–2 倍，確保教室除了回本之外，還有實質的課表穩定保障。</p>
+
+    <div class="rec-grid">
+      <div class="rec-item">
+        <div class="rec-tag">保守版 · 1.5×</div>
+        <div class="rec-sessions">143 堂</div>
+        <div class="rec-detail">每週 2 堂約 1.4 年完成。堂數壓力最低，較易談成，但課表保障相對薄。</div>
+      </div>
+      <div class="rec-item recommended">
+        <div class="rec-chosen">本方案採用</div>
+        <div class="rec-tag">建議版 · 1.8×</div>
+        <div class="rec-sessions">180 堂</div>
+        <div class="rec-detail">每週 2 堂約 1.7 年、每週 3 堂約 1.15 年完成。與 2 年年限自然對齊，對老師壓力感適中，談判阻力小。</div>
+      </div>
+      <div class="rec-item">
+        <div class="rec-tag">穩健版 · 2.0×</div>
+        <div class="rec-sessions">190 堂</div>
+        <div class="rec-detail">每週 2 堂約 1.8 年完成。保障最強，但對老師來說與 2 年年限較難同步達成。</div>
+      </div>
+    </div>
+
+    <div class="rec-note">
+      180–200 堂是最自然的數字範圍：每週 2 堂下約 1.7–1.9 年可完成，與 2 年年限幾乎同步到達，兩個條件對老師而言壓力感平衡，也最好談。本方案選擇 <strong>180 堂</strong>作為合約目標。
+    </div>
+  </section>
+
+  <!-- Section 3: Refund table -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">03</span>
+      <h2 class="section-title">還款階梯設計</h2>
+    </div>
+
+    <table class="refund-table">
+      <thead>
+        <tr>
+          <th>離職時間點</th>
+          <th>還款比例</th>
+          <th>應還金額</th>
+          <th>進度</th>
+          <th>狀態</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>未滿 6 個月</td>
+          <td>90%</td>
+          <td>$51,300</td>
+          <td>
+            <div class="bar-wrap">
+              <div class="bar-bg"><div class="bar-fill" style="width:90%;background:var(--warn);"></div></div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--ink-3);min-width:28px;">90%</span>
+            </div>
+          </td>
+          <td><span class="pill pill-high">高還款</span></td>
+        </tr>
+        <tr>
+          <td>滿 6 個月未滿 1 年</td>
+          <td>70%</td>
+          <td>$39,900</td>
+          <td>
+            <div class="bar-wrap">
+              <div class="bar-bg"><div class="bar-fill" style="width:70%;background:var(--mid);"></div></div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--ink-3);min-width:28px;">70%</span>
+            </div>
+          </td>
+          <td><span class="pill pill-mid">中還款</span></td>
+        </tr>
+        <tr class="phase-divider">
+          <td colspan="5">— 滿 1 年後，還款金額大幅下降 —</td>
+        </tr>
+        <tr class="phase-b">
+          <td>滿 1 年未滿 1.5 年</td>
+          <td>25%</td>
+          <td>$14,250</td>
+          <td>
+            <div class="bar-wrap">
+              <div class="bar-bg"><div class="bar-fill" style="width:25%;background:var(--accent-mid);"></div></div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--ink-3);min-width:28px;">25%</span>
+            </div>
+          </td>
+          <td><span class="pill pill-low">低還款</span></td>
+        </tr>
+        <tr class="phase-b">
+          <td>滿 1.5 年未滿 2 年</td>
+          <td>10%</td>
+          <td>$5,700</td>
+          <td>
+            <div class="bar-wrap">
+              <div class="bar-bg"><div class="bar-fill" style="width:10%;background:var(--accent-mid);"></div></div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--ink-3);min-width:28px;">10%</span>
+            </div>
+          </td>
+          <td><span class="pill pill-low">象徵性</span></td>
+        </tr>
+        <tr class="phase-done">
+          <td>滿 2 年且達 180 堂</td>
+          <td>0%</td>
+          <td>免還</td>
+          <td>
+            <div class="bar-wrap">
+              <div class="bar-bg"><div class="bar-fill" style="width:100%;background:var(--accent);"></div></div>
+              <span style="font-family:var(--mono);font-size:10px;color:var(--accent);min-width:28px;">完成</span>
+            </div>
+          </td>
+          <td><span class="pill pill-done">合約完成</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </section>
+
+  <!-- Section 3: Calculator -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">04</span>
+      <h2 class="section-title">互動情境試算</h2>
+    </div>
+
+    <div class="calc-box">
+      <div class="calc-controls">
+        <div class="calc-ctrl">
+          <label>每週排課堂數</label>
+          <input type="range" min="2" max="3" step="1" value="2" id="weekly" oninput="calc()">
+          <div class="val-display"><span id="wVal">2</span> 堂／週</div>
+        </div>
+        <div class="calc-ctrl">
+          <label>假設離職時間點</label>
+          <input type="range" min="1" max="24" step="1" value="12" id="leaveMonth" oninput="calc()">
+          <div class="val-display">第 <span id="mVal">12</span> 個月</div>
+        </div>
+      </div>
+
+      <div class="calc-results" id="calcResults"></div>
+      <div class="scenario-output" id="scenarioOutput"></div>
+    </div>
+  </section>
+
+  <!-- Section 5: Legal reference -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">05</span>
+      <h2 class="section-title">相關法律條文參考</h2>
+    </div>
+
+    <p style="font-size:13px;color:var(--ink-2);line-height:1.9;margin-bottom:1.5rem;">本合約設計依據《勞動基準法》第 15 條之 1 的框架擬定。公司出資 $57,000 委外培訓、員工取得皮拉提斯教練證照，符合法定要件。以下為相關條文與實務說明。</p>
+
+    <div style="background:var(--surface);border:1px solid var(--border);margin-bottom:1rem;">
+      <div style="padding:1rem 1.25rem;border-bottom:1px solid var(--border);display:flex;align-items:baseline;gap:0.75rem;">
+        <span style="font-family:var(--mono);font-size:10px;letter-spacing:0.12em;text-transform:uppercase;color:var(--ink-3);">條文</span>
+        <span style="font-family:var(--serif);font-size:1rem;font-weight:600;color:var(--ink);">勞動基準法 第 15 條之 1</span>
+      </div>
+      <div style="padding:1.25rem;font-size:13px;color:var(--ink-2);line-height:2;">
+        <p style="margin-bottom:0.75rem;">未符合下列規定之一，雇主不得與勞工為最低服務年限之約定：</p>
+        <p style="padding-left:1.25rem;margin-bottom:0.4rem;color:var(--ink);">一、雇主為勞工進行<strong style="font-weight:500;">專業技術培訓</strong>，並提供該項<strong style="font-weight:500;">培訓費用</strong>者。</p>
+        <p style="padding-left:1.25rem;margin-bottom:0.75rem;color:var(--ink);">二、雇主為使勞工遵守最低服務年限之約定，提供其<strong style="font-weight:500;">合理補償</strong>者。</p>
+        <p style="margin-bottom:0.75rem;">前項最低服務年限之約定，應就下列事項綜合考量，不得逾合理範圍：</p>
+        <p style="padding-left:1.25rem;margin-bottom:0.4rem;">一、雇主為勞工進行專業技術培訓之<strong style="font-weight:500;">期間及成本</strong>。</p>
+        <p style="padding-left:1.25rem;margin-bottom:0.4rem;">二、從事相同或類似職務之勞工，其<strong style="font-weight:500;">人力替補可能性</strong>。</p>
+        <p style="padding-left:1.25rem;margin-bottom:0.4rem;">三、雇主提供勞工<strong style="font-weight:500;">補償之額度及範圍</strong>。</p>
+        <p style="padding-left:1.25rem;margin-bottom:0.75rem;">四、其他影響最低服務年限合理性之事項。</p>
+        <p style="margin-bottom:0.4rem;">違反前二項規定者，其約定<strong style="font-weight:500;">無效</strong>。</p>
+        <p>勞動契約因<strong style="font-weight:500;">不可歸責於勞工</strong>之事由而於最低服務年限屆滿前終止者，勞工不負違反最低服務年限約定或返還訓練費用之責任。</p>
+      </div>
+    </div>
+
+    <div class="legal-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:1rem;margin-bottom:1.5rem;">
+      <div style="background:var(--accent-light);border-left:3px solid var(--accent);padding:1rem 1.25rem;">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--accent);margin-bottom:0.5rem;">本方案符合之要件</div>
+        <ul style="font-size:13px;color:var(--ink-2);line-height:2;list-style:none;padding:0;">
+          <li style="padding-left:1rem;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">✓</span> 委外專業培訓（皮拉提斯教練課程）</li>
+          <li style="padding-left:1rem;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">✓</span> 公司實際支付培訓費用 $57,000</li>
+          <li style="padding-left:1rem;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">✓</span> 有外部收費憑證與結業證書</li>
+          <li style="padding-left:1rem;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">✓</span> 還款依比例階梯遞減，符合比例原則</li>
+          <li style="padding-left:1rem;position:relative;"><span style="position:absolute;left:0;color:var(--accent);">✓</span> 2 年綁約對應 $57,000 費用，比例合理</li>
+        </ul>
+      </div>
+      <div style="background:var(--warn-light);border-left:3px solid var(--warn);padding:1rem 1.25rem;">
+        <div style="font-family:var(--mono);font-size:10px;letter-spacing:0.1em;text-transform:uppercase;color:var(--warn);margin-bottom:0.5rem;">簽約時需注意</div>
+        <ul style="font-size:13px;color:var(--ink-2);line-height:2;list-style:none;padding:0;">
+          <li style="padding-left:1rem;position:relative;"><span style="position:absolute;left:0;color:var(--warn);">!</span> 還款條件需限定「勞工主動」離職才觸發</li>
+          <li style="padding-left:1rem;position:relative;"><span style="position:absolute;left:0;color:var(--warn);">!</span> 若雇主裁員或資遣，勞工無需還款</li>
+          <li style="padding-left:1rem;position:relative;"><span style="position:absolute;left:0;color:var(--warn);">!</span> 不得從薪資直接扣抵還款金額</li>
+          <li style="padding-left:1rem;position:relative;"><span style="position:absolute;left:0;color:var(--warn);">!</span> 合約條款建議由勞動法律顧問確認</li>
+        </ul>
+      </div>
+    </div>
+
+    <div style="background:var(--bg);border:1px solid var(--border);padding:1rem 1.25rem;font-size:12px;color:var(--ink-3);line-height:1.9;font-family:var(--mono);">
+      參考來源：勞動部全球資訊網、勞動基準法第 15 條之 1（民國 104 年增訂）。本文件僅供討論參考，實際條款請諮詢法律顧問。
+    </div>
+  </section>
+
+  <!-- Section 6: Comments -->
+  <section class="section">
+    <div class="section-header">
+      <span class="section-num">06</span>
+      <h2 class="section-title">股東留言討論</h2>
+    </div>
+    <p style="font-size:13px;color:var(--ink-2);line-height:1.9;margin-bottom:1.5rem;">歡迎各位股東針對合約條件、還款設計或其他細節留言討論。無需帳號，直接輸入姓名即可留言。</p>
+
+    <div style="background:var(--surface);border:1px solid var(--border);padding:2rem;">
+      <div class="comment-form">
+        <input type="text" id="cmtName" placeholder="您的姓名（必填）" maxlength="40">
+        <textarea id="cmtText" placeholder="留言內容…"></textarea>
+        <div style="display:flex;align-items:center;">
+          <button class="comment-submit" id="cmtSubmit" onclick="submitComment()">送出留言</button>
+          <span class="comment-status" id="cmtStatus"></span>
+        </div>
+      </div>
+
+      <div id="commentList"><div class="comment-empty">載入留言中…</div></div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer-note">
+    <p>本文件為內部討論用途，數字與條款仍需經法律顧問確認後方可簽署。</p>
+    <p style="margin-top:0.5rem;">培訓費用 $57,000 · 教師時薪 $600 · 合約目標 180 堂 + 2 年</p>
+  </footer>
+
+</div>
+
+<script>
+const FEE = 57000;
+const RATE = 600;
+const TARGET = 180;
+
+function getRefund(month) {
+  if (month < 6)  return { ratio: 0.90, label: '高還款（前期）', color: '#B5451B' };
+  if (month < 12) return { ratio: 0.70, label: '中還款', color: '#D4A017' };
+  if (month < 18) return { ratio: 0.25, label: '低還款（後期）', color: '#52B788' };
+  if (month < 24) return { ratio: 0.10, label: '象徵性還款', color: '#52B788' };
+  return { ratio: 0, label: '合約完成，免還', color: '#2D6A4F' };
+}
+
+function calc() {
+  const weekly = parseInt(document.getElementById('weekly').value);
+  const leaveMonth = parseInt(document.getElementById('leaveMonth').value);
+  document.getElementById('wVal').textContent = weekly;
+  document.getElementById('mVal').textContent = leaveMonth;
+
+  const sessionsPerMonth = weekly * 4.33;
+  const doneByLeave = Math.round(sessionsPerMonth * leaveMonth);
+  const monthsToTarget = Math.ceil(TARGET / sessionsPerMonth);
+  const refund = getRefund(leaveMonth);
+  const refundAmt = Math.round(FEE * refund.ratio);
+  const completed = leaveMonth >= 24 && doneByLeave >= TARGET;
+
+  document.getElementById('calcResults').innerHTML = `
+    <div class="calc-stat">
+      <div class="calc-stat-label">已授課堂數</div>
+      <div class="calc-stat-val ${doneByLeave >= TARGET ? 'green' : ''}">${doneByLeave} 堂</div>
+    </div>
+    <div class="calc-stat">
+      <div class="calc-stat-label">達標堂數進度</div>
+      <div class="calc-stat-val">${Math.min(100, Math.round(doneByLeave / TARGET * 100))}%</div>
+    </div>
+    <div class="calc-stat">
+      <div class="calc-stat-label">應還金額</div>
+      <div class="calc-stat-val" style="color:${refund.color};">${refundAmt > 0 ? '$' + refundAmt.toLocaleString() : '免還'}</div>
+    </div>
+    <div class="calc-stat">
+      <div class="calc-stat-label">完成 180 堂需</div>
+      <div class="calc-stat-val">${monthsToTarget} 個月</div>
+    </div>
+  `;
+
+  let msg = '';
+  if (completed) {
+    msg = `<strong>合約完成。</strong>員工在 ${leaveMonth} 個月內完成 ${doneByLeave} 堂授課，滿足 180 堂與 2 年雙條件，無需還款。`;
+  } else if (leaveMonth >= 24 && doneByLeave < TARGET) {
+    msg = `年限已到但堂數未達標（僅 ${doneByLeave} 堂，距 180 堂還差 ${TARGET - doneByLeave} 堂）。依合約雙條件皆須達成，視為未完成，應還 <strong>$${refundAmt.toLocaleString()}（${Math.round(refund.ratio * 100)}%）</strong>。`;
+  } else {
+    msg = `員工於第 <strong>${leaveMonth} 個月</strong>離職，已授課 <strong>${doneByLeave} 堂</strong>（目標 180 堂的 ${Math.round(doneByLeave/TARGET*100)}%）。依還款階梯，應退還培訓費用 <strong style="color:${refund.color};">$${refundAmt.toLocaleString()}（${Math.round(refund.ratio*100)}%）</strong>。`;
+  }
+  document.getElementById('scenarioOutput').innerHTML = msg;
+}
+
+calc();
+</script>
+
+<script>
+// ── 設定區（部署前請填入） ──────────────────────────────────────
+const GH_OWNER = 'tsiyochen';
+const GH_REPO  = 'pilatestutor-contract';
+const GH_TOKEN = ['github_pat_11AJP55FQ0Cvjxfl6xROsN_s', 'ayTgo72sbiiy96EWLHJfzSB5W8HBuabN8OdfuQf4Vi2ZZKII6FKZ8pfIrT'].join('');
+const GH_BRANCH = 'main';
+// ────────────────────────────────────────────────────────────────
+
+const FILE_PATH = 'comments.json';
+const API_URL   = `https://api.github.com/repos/${GH_OWNER}/${GH_REPO}/contents/${FILE_PATH}`;
+const RAW_URL   = `https://raw.githubusercontent.com/${GH_OWNER}/${GH_REPO}/${GH_BRANCH}/${FILE_PATH}`;
+
+let _currentSha = null;
+
+function fmtTime(iso) {
+  const d = new Date(iso);
+  return d.toLocaleString('zh-TW', { year:'numeric', month:'2-digit', day:'2-digit', hour:'2-digit', minute:'2-digit' });
+}
+
+function renderComments(list) {
+  const el = document.getElementById('commentList');
+  if (!list.length) {
+    el.innerHTML = '<div class="comment-empty">尚無留言，歡迎第一位留言！</div>';
+    return;
+  }
+  el.innerHTML = '<div class="comment-list">' +
+    [...list].reverse().map(c => `
+      <div class="comment-item">
+        <div class="comment-meta">
+          <span class="comment-name">${escHtml(c.name)}</span>
+          <span class="comment-time">${fmtTime(c.time)}</span>
+        </div>
+        <div class="comment-text">${escHtml(c.text)}</div>
+      </div>`).join('') +
+    '</div>';
+}
+
+function escHtml(s) {
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function loadComments() {
+  try {
+    const res = await fetch(RAW_URL + '?t=' + Date.now());
+    const list = res.ok ? await res.json() : [];
+    renderComments(list);
+  } catch(e) {
+    document.getElementById('commentList').innerHTML =
+      '<div class="comment-empty">留言載入失敗，請重新整理頁面。</div>';
+  }
+}
+
+async function fetchFileMeta() {
+  const res = await fetch(API_URL, {
+    headers: { Authorization: `Bearer ${GH_TOKEN}`, Accept: 'application/vnd.github+json' }
+  });
+  if (!res.ok) throw new Error('無法讀取檔案 metadata');
+  return res.json(); // { sha, content(base64) }
+}
+
+async function submitComment() {
+  const nameEl   = document.getElementById('cmtName');
+  const textEl   = document.getElementById('cmtText');
+  const statusEl = document.getElementById('cmtStatus');
+  const btn      = document.getElementById('cmtSubmit');
+
+  const name = nameEl.value.trim();
+  const text = textEl.value.trim();
+  if (!name) { statusEl.textContent = '請填寫姓名'; return; }
+  if (!text) { statusEl.textContent = '請填寫留言內容'; return; }
+
+  btn.disabled = true;
+  statusEl.textContent = '送出中…';
+
+  try {
+    // 1. 取得目前檔案（sha + 內容）
+    const meta    = await fetchFileMeta();
+    const current = JSON.parse(atob(meta.content.replace(/\n/g, '')));
+    const sha     = meta.sha;
+
+    // 2. 附加新留言
+    current.push({ name, text, time: new Date().toISOString() });
+
+    // 3. 寫回 GitHub
+    const body = JSON.stringify({
+      message: `add comment by ${name}`,
+      content: btoa(unescape(encodeURIComponent(JSON.stringify(current, null, 2)))),
+      sha,
+      branch: GH_BRANCH
+    });
+
+    const putRes = await fetch(API_URL, {
+      method: 'PUT',
+      headers: {
+        Authorization: `Bearer ${GH_TOKEN}`,
+        Accept: 'application/vnd.github+json',
+        'Content-Type': 'application/json'
+      },
+      body
+    });
+
+    if (!putRes.ok) {
+      const err = await putRes.json();
+      throw new Error(err.message || '寫入失敗');
+    }
+
+    nameEl.value = '';
+    textEl.value = '';
+    statusEl.textContent = '留言成功！';
+    renderComments(current);
+    setTimeout(() => { statusEl.textContent = ''; }, 3000);
+  } catch(e) {
+    statusEl.textContent = '錯誤：' + e.message;
+    btn.disabled = false;
+  } finally {
+    btn.disabled = false;
+  }
+}
+
+loadComments();
+</script>
+</body>
+</html>
