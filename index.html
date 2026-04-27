@@ -563,7 +563,7 @@ async function submitComment() {
   try {
     const res = await fetch(WORKER_URL, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 'Content-Type': 'application/json', 'X-Secret': 'pilates2026!' },
       body: JSON.stringify({ name, text })
     });
 
