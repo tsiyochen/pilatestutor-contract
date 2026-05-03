@@ -257,10 +257,15 @@
       <h2 class="section-title">還款階梯設計</h2>
     </div>
 
+    <div class="condition-note" style="margin-bottom:1.25rem;">
+      還款階梯採<strong>時間 × 堂數雙條件</strong>：兩者皆須達到，才能適用較低的還款比例。任一條件未達，以較高的階梯計算。堂數門檻依 180 堂／24 個月等比例設定，避免老師以不排課方式規避還款責任。
+    </div>
+
     <table class="refund-table">
       <thead>
         <tr>
-          <th>離職時間點</th>
+          <th>堂數條件</th>
+          <th>時間條件</th>
           <th>還款比例</th>
           <th>應還金額</th>
           <th>進度</th>
@@ -269,6 +274,7 @@
       </thead>
       <tbody>
         <tr>
+          <td>未達 <strong>45 堂</strong></td>
           <td>未滿 6 個月</td>
           <td>90%</td>
           <td>$51,300</td>
@@ -281,6 +287,7 @@
           <td><span class="pill pill-high">高還款</span></td>
         </tr>
         <tr>
+          <td>已達<strong>45 堂</strong>以上</td>
           <td>滿 6 個月未滿 1 年</td>
           <td>70%</td>
           <td>$39,900</td>
@@ -293,9 +300,10 @@
           <td><span class="pill pill-mid">中還款</span></td>
         </tr>
         <tr class="phase-divider">
-          <td colspan="5">— 滿 1 年後，還款金額大幅下降 —</td>
+          <td colspan="6">— 滿 1 年且達 100 堂後，還款金額大幅下降 —</td>
         </tr>
         <tr class="phase-b">
+          <td>已達<strong>100 堂</strong>以上</td>
           <td>滿 1 年未滿 1.5 年</td>
           <td>25%</td>
           <td>$14,250</td>
@@ -308,6 +316,7 @@
           <td><span class="pill pill-low">低還款</span></td>
         </tr>
         <tr class="phase-b">
+          <td>已達<strong>135 堂</strong>以上</td>
           <td>滿 1.5 年未滿 2 年</td>
           <td>10%</td>
           <td>$5,700</td>
@@ -320,7 +329,8 @@
           <td><span class="pill pill-low">象徵性</span></td>
         </tr>
         <tr class="phase-done">
-          <td>滿 2 年且達 180 堂</td>
+          <td>已達<strong>180 堂</strong></td>
+          <td>滿 2 年</td>
           <td>0%</td>
           <td>免還</td>
           <td>
@@ -333,6 +343,10 @@
         </tr>
       </tbody>
     </table>
+
+    <div style="margin-top:1rem;background:var(--warn-light);border-left:3px solid var(--warn);padding:1rem 1.25rem;font-size:13px;color:var(--ink-2);line-height:1.9;">
+      <strong style="color:var(--warn);">未達堂數門檻的情境說明：</strong>例如員工在職 14 個月，但僅授課 60 堂（低於 90 堂門檻），雖然時間上已進入「低還款」區間，實際仍以 <strong>70% 中還款</strong>計算（$39,900）。時間與堂數兩者取較不利方向適用。
+    </div>
   </section>
 
   <!-- Section 3: Calculator -->
@@ -343,16 +357,21 @@
     </div>
 
     <div class="calc-box">
-      <div class="calc-controls">
-        <div class="calc-ctrl">
-          <label>每週排課堂數</label>
-          <input type="range" min="2" max="3" step="1" value="2" id="weekly" oninput="calc()">
-          <div class="val-display"><span id="wVal">2</span> 堂／週</div>
-        </div>
+      <div class="calc-controls" style="grid-template-columns:1fr 1fr 1fr;">
         <div class="calc-ctrl">
           <label>假設離職時間點</label>
           <input type="range" min="1" max="24" step="1" value="12" id="leaveMonth" oninput="calc()">
           <div class="val-display">第 <span id="mVal">12</span> 個月</div>
+        </div>
+        <div class="calc-ctrl">
+          <label>實際已授課堂數</label>
+          <input type="range" min="0" max="180" step="5" value="80" id="doneSessions" oninput="calc()">
+          <div class="val-display"><span id="sVal">80</span> 堂</div>
+        </div>
+        <div class="calc-ctrl">
+          <label>每週排課堂數（參考）</label>
+          <input type="range" min="2" max="3" step="1" value="2" id="weekly" oninput="calc()">
+          <div class="val-display"><span id="wVal">2</span> 堂／週</div>
         </div>
       </div>
 
@@ -451,53 +470,90 @@ const FEE = 57000;
 const RATE = 600;
 const TARGET = 180;
 
-function getRefund(month) {
-  if (month < 6)  return { ratio: 0.90, label: '高還款（前期）', color: '#B5451B' };
-  if (month < 12) return { ratio: 0.70, label: '中還款', color: '#D4A017' };
-  if (month < 18) return { ratio: 0.25, label: '低還款（後期）', color: '#52B788' };
-  if (month < 24) return { ratio: 0.10, label: '象徵性還款', color: '#52B788' };
-  return { ratio: 0, label: '合約完成，免還', color: '#2D6A4F' };
+// 堂數門檻：每個時間階段對應的最低堂數（按比例等分）
+const SESSION_THRESHOLDS = [
+  { month: 6,  sessions: 45  },
+  { month: 12, sessions: 100 },
+  { month: 18, sessions: 135 },
+  { month: 24, sessions: 180 },
+];
+
+function getRefund(month, done) {
+  // 依時間判斷「時間所屬階段」，再檢查堂數是否達到該階段門檻
+  // 若堂數不足，退回上一個（較高）還款比例
+  const tiers = [
+    { minMonth: 24, minSessions: 180, ratio: 0.00, label: '合約完成，免還',  color: '#2D6A4F' },
+    { minMonth: 18, minSessions: 135, ratio: 0.10, label: '象徵性還款',       color: '#52B788' },
+    { minMonth: 12, minSessions: 100, ratio: 0.25, label: '低還款（後期）',   color: '#52B788' },
+    { minMonth:  6, minSessions: 45,  ratio: 0.70, label: '中還款',           color: '#D4A017' },
+  ];
+
+  for (const tier of tiers) {
+    if (month >= tier.minMonth && done >= tier.minSessions) return tier;
+  }
+  return { ratio: 0.90, label: '高還款（前期）', color: '#B5451B' };
 }
 
 function calc() {
-  const weekly = parseInt(document.getElementById('weekly').value);
-  const leaveMonth = parseInt(document.getElementById('leaveMonth').value);
+  const weekly      = parseInt(document.getElementById('weekly').value);
+  const leaveMonth  = parseInt(document.getElementById('leaveMonth').value);
+  const doneSessions = parseInt(document.getElementById('doneSessions').value);
   document.getElementById('wVal').textContent = weekly;
   document.getElementById('mVal').textContent = leaveMonth;
+  document.getElementById('sVal').textContent = doneSessions;
 
   const sessionsPerMonth = weekly * 4.33;
-  const doneByLeave = Math.round(sessionsPerMonth * leaveMonth);
-  const monthsToTarget = Math.ceil(TARGET / sessionsPerMonth);
-  const refund = getRefund(leaveMonth);
+  const expectedByLeave  = Math.round(sessionsPerMonth * leaveMonth);
+  const monthsToTarget   = Math.ceil(TARGET / sessionsPerMonth);
+  const refund    = getRefund(leaveMonth, doneSessions);
   const refundAmt = Math.round(FEE * refund.ratio);
-  const completed = leaveMonth >= 24 && doneByLeave >= TARGET;
+  const completed = leaveMonth >= 24 && doneSessions >= TARGET;
+
+  // 找出堂數門檻缺口
+  const nextThreshold = SESSION_THRESHOLDS.find(t => t.month > leaveMonth || (t.month === leaveMonth && doneSessions < t.sessions));
+  const sessionGap = nextThreshold ? Math.max(0, nextThreshold.sessions - doneSessions) : 0;
+
+  // 判斷是否因為堂數不足而被退回上一階
+  const timeOnlyRefund = (() => {
+    const tiers = [
+      { minMonth: 24, ratio: 0.00 },
+      { minMonth: 18, ratio: 0.10 },
+      { minMonth: 12, ratio: 0.25 },
+      { minMonth:  6, ratio: 0.70 },
+    ];
+    for (const t of tiers) { if (leaveMonth >= t.minMonth) return t; }
+    return { ratio: 0.90 };
+  })();
+  const penalized = !completed && refund.ratio > timeOnlyRefund.ratio;
 
   document.getElementById('calcResults').innerHTML = `
     <div class="calc-stat">
       <div class="calc-stat-label">已授課堂數</div>
-      <div class="calc-stat-val ${doneByLeave >= TARGET ? 'green' : ''}">${doneByLeave} 堂</div>
+      <div class="calc-stat-val ${doneSessions >= TARGET ? 'green' : ''}">${doneSessions} 堂</div>
     </div>
     <div class="calc-stat">
       <div class="calc-stat-label">達標堂數進度</div>
-      <div class="calc-stat-val">${Math.min(100, Math.round(doneByLeave / TARGET * 100))}%</div>
+      <div class="calc-stat-val">${Math.min(100, Math.round(doneSessions / TARGET * 100))}%</div>
     </div>
     <div class="calc-stat">
       <div class="calc-stat-label">應還金額</div>
       <div class="calc-stat-val" style="color:${refund.color};">${refundAmt > 0 ? '$' + refundAmt.toLocaleString() : '免還'}</div>
     </div>
     <div class="calc-stat">
-      <div class="calc-stat-label">完成 180 堂需</div>
-      <div class="calc-stat-val">${monthsToTarget} 個月</div>
+      <div class="calc-stat-label">按時間預期堂數</div>
+      <div class="calc-stat-val">${expectedByLeave} 堂</div>
     </div>
   `;
 
   let msg = '';
   if (completed) {
-    msg = `<strong>合約完成。</strong>員工在 ${leaveMonth} 個月內完成 ${doneByLeave} 堂授課，滿足 180 堂與 2 年雙條件，無需還款。`;
-  } else if (leaveMonth >= 24 && doneByLeave < TARGET) {
-    msg = `年限已到但堂數未達標（僅 ${doneByLeave} 堂，距 180 堂還差 ${TARGET - doneByLeave} 堂）。依合約雙條件皆須達成，視為未完成，應還 <strong>$${refundAmt.toLocaleString()}（${Math.round(refund.ratio * 100)}%）</strong>。`;
+    msg = `<strong>合約完成。</strong>滿足 2 年年限與 180 堂雙條件，無需還款。`;
+  } else if (penalized) {
+    msg = `員工在職 <strong>${leaveMonth} 個月</strong>，但實際授課僅 <strong>${doneSessions} 堂</strong>，未達此時間點應有的堂數門檻（差 ${sessionGap} 堂）。<span style="color:var(--warn);">因堂數不足，還款比例退回上一階：應還 <strong>$${refundAmt.toLocaleString()}（${Math.round(refund.ratio*100)}%）</strong></span>，而非時間所屬的 ${Math.round(timeOnlyRefund.ratio*100)}%。`;
+  } else if (leaveMonth >= 24 && doneSessions < TARGET) {
+    msg = `年限已到但堂數未達標（僅 ${doneSessions} 堂，距 180 堂還差 ${TARGET - doneSessions} 堂）。依雙條件規定，應還 <strong style="color:${refund.color};">$${refundAmt.toLocaleString()}（${Math.round(refund.ratio * 100)}%）</strong>。`;
   } else {
-    msg = `員工於第 <strong>${leaveMonth} 個月</strong>離職，已授課 <strong>${doneByLeave} 堂</strong>（目標 180 堂的 ${Math.round(doneByLeave/TARGET*100)}%）。依還款階梯，應退還培訓費用 <strong style="color:${refund.color};">$${refundAmt.toLocaleString()}（${Math.round(refund.ratio*100)}%）</strong>。`;
+    msg = `員工於第 <strong>${leaveMonth} 個月</strong>離職，已授課 <strong>${doneSessions} 堂</strong>（目標 180 堂的 ${Math.round(doneSessions/TARGET*100)}%）。依時間與堂數雙條件，應還 <strong style="color:${refund.color};">$${refundAmt.toLocaleString()}（${Math.round(refund.ratio*100)}%）</strong>。`;
   }
   document.getElementById('scenarioOutput').innerHTML = msg;
 }
