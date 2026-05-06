@@ -181,7 +181,7 @@
     </div>
     <div class="kn-item">
       <div class="kn-label">合約目標</div>
-      <div class="kn-value">180</div>
+      <div class="kn-value">150</div>
       <div class="kn-unit">堂 + 2 年（雙條件）</div>
     </div>
   </div>
@@ -196,8 +196,8 @@
     <div class="conditions">
       <div class="cond-card">
         <div class="cond-icon">條件一 · 堂數</div>
-        <div class="cond-main">180 堂</div>
-        <div class="cond-desc">在職期間累計授課堂數須達 180 堂，每週預計排課 2–3 堂。</div>
+        <div class="cond-main">150 堂</div>
+        <div class="cond-desc">在職期間累計授課堂數須達 150 堂，每週預計排課 2–3 堂。</div>
       </div>
       <div class="cond-card">
         <div class="cond-icon">條件二 · 年限</div>
@@ -235,7 +235,7 @@
       <div class="rec-item recommended">
         <div class="rec-chosen">本方案採用</div>
         <div class="rec-tag">建議版 · 1.8×</div>
-        <div class="rec-sessions">180 堂</div>
+        <div class="rec-sessions">150 堂</div>
         <div class="rec-detail">每週 2 堂約 1.7 年、每週 3 堂約 1.15 年完成。與 2 年年限自然對齊，對老師壓力感適中，談判阻力小。</div>
       </div>
       <div class="rec-item">
@@ -246,7 +246,7 @@
     </div>
 
     <div class="rec-note">
-      180–200 堂是最自然的數字範圍：每週 2 堂下約 1.7–1.9 年可完成，與 2 年年限幾乎同步到達，兩個條件對老師而言壓力感平衡，也最好談。本方案選擇 <strong>180 堂</strong>作為合約目標。
+      150–180 堂是最自然的數字範圍：每週 2 堂下約 1.4–1.7 年可完成，與 2 年年限幾乎同步到達，兩個條件對老師而言壓力感平衡，也最好談。本方案選擇 <strong>150 堂</strong>作為合約目標。
     </div>
   </section>
 
@@ -258,7 +258,7 @@
     </div>
 
     <div class="condition-note" style="margin-bottom:1.25rem;">
-      還款階梯採<strong>時間 × 堂數雙條件</strong>：兩者皆須達到，才能適用較低的還款比例。任一條件未達，以較高的階梯計算。堂數門檻依 180 堂／24 個月等比例設定，避免老師以不排課方式規避還款責任。
+      還款階梯採<strong>時間 × 堂數雙條件</strong>：兩者皆須達到，才能適用較低的還款比例。任一條件未達，以較高的階梯計算。堂數門檻依 150 堂／24 個月等比例設定，避免老師以不排課方式規避還款責任。
     </div>
 
     <table class="refund-table">
@@ -329,7 +329,7 @@
           <td><span class="pill pill-low">象徵性</span></td>
         </tr>
         <tr class="phase-done">
-          <td>已達<strong>180 堂</strong></td>
+          <td>已達<strong>150 堂</strong></td>
           <td>滿 2 年</td>
           <td>0%</td>
           <td>免還</td>
@@ -365,7 +365,7 @@
         </div>
         <div class="calc-ctrl">
           <label>實際已授課堂數</label>
-          <input type="range" min="0" max="180" step="5" value="80" id="doneSessions" oninput="calc()">
+          <input type="range" min="0" max="150" step="5" value="80" id="doneSessions" oninput="calc()">
           <div class="val-display"><span id="sVal">80</span> 堂</div>
         </div>
         <div class="calc-ctrl">
@@ -460,7 +460,7 @@
   <!-- Footer -->
   <footer class="footer-note">
     <p>本文件為內部討論用途，數字與條款仍需經法律顧問確認後方可簽署。</p>
-    <p style="margin-top:0.5rem;">培訓費用 $57,000 · 教師時薪 $600 · 合約目標 180 堂 + 2 年</p>
+    <p style="margin-top:0.5rem;">培訓費用 $57,000 · 教師時薪 $600 · 合約目標 150 堂 + 2 年</p>
   </footer>
 
 </div>
@@ -468,21 +468,21 @@
 <script>
 const FEE = 57000;
 const RATE = 600;
-const TARGET = 180;
+const TARGET = 150;
 
 // 堂數門檻：每個時間階段對應的最低堂數（按比例等分）
 const SESSION_THRESHOLDS = [
   { month: 6,  sessions: 45  },
   { month: 12, sessions: 100 },
   { month: 18, sessions: 135 },
-  { month: 24, sessions: 180 },
+  { month: 24, sessions: 150 },
 ];
 
 function getRefund(month, done) {
   // 依時間判斷「時間所屬階段」，再檢查堂數是否達到該階段門檻
   // 若堂數不足，退回上一個（較高）還款比例
   const tiers = [
-    { minMonth: 24, minSessions: 180, ratio: 0.00, label: '合約完成，免還',  color: '#2D6A4F' },
+    { minMonth: 24, minSessions: 150, ratio: 0.00, label: '合約完成，免還',  color: '#2D6A4F' },
     { minMonth: 18, minSessions: 135, ratio: 0.10, label: '象徵性還款',       color: '#52B788' },
     { minMonth: 12, minSessions: 100, ratio: 0.25, label: '低還款（後期）',   color: '#52B788' },
     { minMonth:  6, minSessions: 45,  ratio: 0.70, label: '中還款',           color: '#D4A017' },
@@ -547,13 +547,13 @@ function calc() {
 
   let msg = '';
   if (completed) {
-    msg = `<strong>合約完成。</strong>滿足 2 年年限與 180 堂雙條件，無需還款。`;
+    msg = `<strong>合約完成。</strong>滿足 2 年年限與 150 堂雙條件，無需還款。`;
   } else if (penalized) {
     msg = `員工在職 <strong>${leaveMonth} 個月</strong>，但實際授課僅 <strong>${doneSessions} 堂</strong>，未達此時間點應有的堂數門檻（差 ${sessionGap} 堂）。<span style="color:var(--warn);">因堂數不足，還款比例退回上一階：應還 <strong>$${refundAmt.toLocaleString()}（${Math.round(refund.ratio*100)}%）</strong></span>，而非時間所屬的 ${Math.round(timeOnlyRefund.ratio*100)}%。`;
   } else if (leaveMonth >= 24 && doneSessions < TARGET) {
-    msg = `年限已到但堂數未達標（僅 ${doneSessions} 堂，距 180 堂還差 ${TARGET - doneSessions} 堂）。依雙條件規定，應還 <strong style="color:${refund.color};">$${refundAmt.toLocaleString()}（${Math.round(refund.ratio * 100)}%）</strong>。`;
+    msg = `年限已到但堂數未達標（僅 ${doneSessions} 堂，距 150 堂還差 ${TARGET - doneSessions} 堂）。依雙條件規定，應還 <strong style="color:${refund.color};">$${refundAmt.toLocaleString()}（${Math.round(refund.ratio * 100)}%）</strong>。`;
   } else {
-    msg = `員工於第 <strong>${leaveMonth} 個月</strong>離職，已授課 <strong>${doneSessions} 堂</strong>（目標 180 堂的 ${Math.round(doneSessions/TARGET*100)}%）。依時間與堂數雙條件，應還 <strong style="color:${refund.color};">$${refundAmt.toLocaleString()}（${Math.round(refund.ratio*100)}%）</strong>。`;
+    msg = `員工於第 <strong>${leaveMonth} 個月</strong>離職，已授課 <strong>${doneSessions} 堂</strong>（目標 150 堂的 ${Math.round(doneSessions/TARGET*100)}%）。依時間與堂數雙條件，應還 <strong style="color:${refund.color};">$${refundAmt.toLocaleString()}（${Math.round(refund.ratio*100)}%）</strong>。`;
   }
   document.getElementById('scenarioOutput').innerHTML = msg;
 }
